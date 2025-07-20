@@ -3,7 +3,14 @@ package org.example.entities;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Bucket {
-  private AtomicInteger tokens = new AtomicInteger(0);
+  private final AtomicInteger tokens;
+
+  private final ResetStrategy resetStrategy;
+
+  public Bucket(int tokens, ResetStrategy resetStrategy) {
+    this.tokens = new AtomicInteger(tokens);
+    this.resetStrategy = resetStrategy;
+  }
 
   public boolean useToken() {
     if (tokens.get() > 0) {
@@ -21,11 +28,6 @@ public class Bucket {
     if (tokens <= 0) {
       throw new IllegalArgumentException("Tokens must be greater than zero");
     }
-    int maxTokens = 2 * tokens;
-    if (this.tokens.get() > 0) {
-      tokens += this.tokens.get() / 2; // Add half of the current tokens to the new value
-    }
-    tokens = Math.min(tokens, maxTokens);
-    this.tokens.set(tokens);
+    this.tokens.set(resetStrategy.resetTokens(tokens, this.tokens.get()));
   }
 }

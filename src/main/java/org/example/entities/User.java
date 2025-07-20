@@ -15,12 +15,14 @@ public class User {
     boolean tokenUsed = bucket.useToken();
 
     if (!tokenUsed) {
-      System.out.println("Rate limit exceeded for user: " + name);
       throw new RateLimitException("Rate limit exceeded for user: " + name);
+    } else {
+      System.out.println("Token used by user: " + name);
     }
   }
 
   public void creditUser(int tokens) {
+    System.out.println(tokens + " tokens credited for user: " + name);
     bucket.resetTokens(tokens);
   }
 }
